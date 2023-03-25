@@ -1,3 +1,10 @@
+import time
+
+import requests
+
+import utils
+
+
 def pull(url, retries=40, sleep_seconds=0.2):
     utils.logger.info(f"GET {url}")
 

@@ -1,77 +1,73 @@
-def parse_makes(url):
-    result = []
-    TARGET0 = b"<a class=\"megamenu-in-page__link\" href=\""
-    TARGET1 = b"\">"
-
-    utils.logger.debug("Parsing makes.")
-    hypertext = pull(url)
-    try:
-        while True:
-            idx = hypertext.index(TARGET0) + len(TARGET0)
-            hypertext = hypertext[idx:]
-            idx = hypertext.index(TARGET1)
-            result.append(hypertext[:idx].decode("utf-8"))
-            hypertext = hypertext[idx:]
-    except ValueError:
-        if result == []:
-            utils.logger.error(f"No makes scraped. {url}")
-
-    utils.logger.debug("Finished parsing makes.")
-    return result
+import utils
 
 
-def parse_models(url):
-    result = []
-    TARGET0 = b"<a class=\"text-uppercase link link--blue\" href=\""
-    TARGET1 = b"\">"
+class Parser:
+    def __init__(self, pull) -> None:
+        self.pull = pull
 
-    utils.logger.debug("Parsing models.")
-    hypertext = pull(url)
-    try:
-        while True:
-            idx = hypertext.index(TARGET0) + len(TARGET0)
-            hypertext = hypertext[idx:]
-            idx = hypertext.index(TARGET1)
-            result.append(hypertext[:idx].decode("utf-8"))
-            hypertext = hypertext[idx:]
-    except ValueError:
-        if result == []:
-            utils.logger.error(f"No models scraped. {url}")
+    def stepover(self, hypertext, target0, target1):
+        idx = hypertext.index(target0) + len(target0)
+        hypertext = hypertext[idx:]
+        idx = hypertext.index(target1)
+        data = hypertext[:idx].decode("utf-8")
+        hypertext = hypertext[idx:]
+        return data, hypertext
 
-    utils.logger.debug("Parsed models.")
-    return result
+    def parse_makes(self, url):
+        result = []
+        TARGET0 = b"<a class=\"megamenu-in-page__link\" href=\""
+        TARGET1 = b"\">"
 
+        utils.logger.debug("Parsing makes.")
+        hypertext = self.pull(url)
+        try:
+            while True:
+                data, hypertext = self.stepover(hypertext, TARGET0, TARGET1)
+                result.append(data)
+        except ValueError:
+            if result == []:
+                utils.logger.warn(f"No makes scraped. {url}")
 
-def parse_specs(url):
-    SEPARATOR = ":"
-    result = []
-    TARGET0 = b"<div class=\"stats__list__accordion__body__stat__top__title\">"
-    TARGET1 = b"</div>"
-    TARGET2 = b"class=\"stats__list__accordion__body__stat__top__right__stat-time\">"
-    TARGET3 = b" <span"
+        utils.logger.debug("Finished parsing makes.")
+        return result
 
-    utils.logger.debug("Parsing specs.")
-    hypertext = pull(url)
-    try:
-        while True:
-            data = ""
-            idx = hypertext.index(TARGET0) + len(TARGET0)
-            hypertext = hypertext[idx:]
-            idx = hypertext.index(TARGET1)
-            data += hypertext[:idx].decode("utf-8").strip()
-            hypertext = hypertext[idx:]
-            
-            data += SEPARATOR
+    def parse_models(self, url):
+        result = []
+        TARGET0 = b"<a class=\"text-uppercase link link--blue\" href=\""
+        TARGET1 = b"\">"
 
-            idx = hypertext.index(TARGET2) + len(TARGET2)
-            hypertext = hypertext[idx:]
-            idx = hypertext.index(TARGET3)
-            data += hypertext[:idx].decode("utf-8")
+        utils.logger.debug("Parsing models.")
+        hypertext = self.pull(url)
+        try:
+            while True:
+                data, hypertext = self.stepover(hypertext, TARGET0, TARGET1)
+                result.append(data)
+        except ValueError:
+            if result == []:
+                utils.logger.warn(f"No models scraped. {url}")
 
-            result.append(data)
-    except ValueError:
-        if result == []:
-            utils.logger.error(f"No specs scraped. {url}")
+        utils.logger.debug("Parsed models.")
+        return result
 
-    utils.logger.debug("Parsed specs.")
-    return result
+    def parse_specs(self, url):
+        SEPARATOR = ":"
+        result = []
+        TARGET0 = b"<div class=\"stats__list__accordion__body__stat__top__title\">"
+        TARGET1 = b"</div>"
+        TARGET2 = b"class=\"stats__list__accordion__body__stat__top__right__stat-time\">"
+        TARGET3 = b" <span"
+
+        utils.logger.debug("Parsing specs.")
+        hypertext = self.pull(url)
+        try:
+            while True:
+                data0, hypertext = self.stepover(hypertext, TARGET0, TARGET1)
+                data0 += SEPARATOR
+                data1, hypertext = self.stepover(hypertext, TARGET2, TARGET3)
+                result.append(data0+data1)
+        except ValueError:
+            if result == []:
+                utils.logger.warn(f"No specs scraped. {url}")
+
+        utils.logger.debug("Parsed specs.")
+        return result
