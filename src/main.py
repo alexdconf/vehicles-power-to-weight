@@ -7,6 +7,7 @@ from src.parse import Parser
 from src.persist import Persister
 from src.remote import Remote
 
+
 if __name__ == "__main__":
     ROOT_URL = "https://www.powertoweight.com/"
     
