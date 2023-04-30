@@ -18,7 +18,9 @@ When it comes to writing computer programs that leverage data, you are only ever
 The first is that you see the data as a sample of measurements from an existing system and you want to gain insight into that system.<br>
 The second is that you see the data as examples for how you want a piece of software to behave. It is likely you want to leverage these examples because it makes more sense to do so than to write a heuristic or algorithm by hand.<br>
 The technical techniques used to perform these two things are largely the same. Arguably, the first is within the real of Data Science and the second within the real of AI Engineering. However, these two things are not mutually exclusive and both may be done, to some degree, during any tasking that involves data and computers.
-### Summary
-There are two objectives with this dataset. 
-### Objective 1
-### Objective 2
+### Objective #1
+What does a 'high power to weight ratio' versus a 'low power to weight ratio' mean in the context of this data?
+### Objective #2
+Apply the methodology from Objective #1 to the data by model year instead of as a whole.
+### Objective #3
+Create a model to predict whether a given power to weight ratio is a 'high power to weight ratio' or a 'low power to weight ratio', given a power to weight ratio and a model year, including for future model years.
